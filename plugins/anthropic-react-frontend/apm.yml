@@ -1,0 +1,20 @@
+name: anthropic-react-frontend
+version: 0.1.0
+description: Anthropic Claude skills for exceptional React and frontend development - bold design, production-grade UIs, avoiding AI slop.
+author: Jacob Spoelstra (curated from Anthropics)
+license: MIT
+repository: https://github.com/jacobspoelstra/devpack
+type: skill
+
+keywords:
+  - anthropic
+  - claude
+  - react
+  - frontend-design
+
+dependencies:
+  apm: []
+  mcp: []
+
+includes: auto
+scripts: {}

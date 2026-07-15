@@ -1,0 +1,81 @@
+lockfile_version: '1'
+generated_at: '2026-05-28T17:11:45.750933+00:00'
+apm_version: 0.16.0
+dependencies:
+- repo_url: _local/anthropic-react-frontend
+  package_type: marketplace_plugin
+  deployed_files:
+  - .agents/skills/frontend-design
+  - .agents/skills/web-artifacts-builder
+  source: local
+  local_path: ./plugins/anthropic-react-frontend
+- repo_url: _local/azure-cosmos
+  package_type: marketplace_plugin
+  deployed_files:
+  - .agents/skills/azure-cosmos-db-py
+  source: local
+  local_path: ./plugins/azure-cosmos
+- repo_url: _local/azure-infrastructure-architecture
+  package_type: marketplace_plugin
+  deployed_files:
+  - .agents/skills/azure-kubernetes
+  - .agents/skills/azure-prepare
+  - .agents/skills/cloud-solution-architect
+  source: local
+  local_path: ./plugins/azure-infrastructure-architecture
+- repo_url: _local/karpathy-principles
+  package_type: marketplace_plugin
+  deployed_files:
+  - .agents/skills/karpathy-principles
+  source: local
+  local_path: ./plugins/karpathy-principles
+- repo_url: _local/microsoft-agent-framework
+  package_type: marketplace_plugin
+  deployed_files:
+  - .agents/skills/agent-framework-azure-ai-py
+  source: local
+  local_path: ./plugins/microsoft-agent-framework
+- repo_url: _local/microsoft-foundry-agents
+  package_type: marketplace_plugin
+  deployed_files:
+  - .agents/skills/foundry-hosted-agents
+  - .agents/skills/foundry-models
+  - .agents/skills/foundry-observability
+  - .agents/skills/microsoft-foundry
+  source: local
+  local_path: ./plugins/microsoft-foundry-agents
+- repo_url: github/awesome-copilot
+  host: github.com
+  resolved_commit: 53cf519185057f72780a1a5f6c8a26cc70cbb0be
+  virtual_path: plugins/context-engineering
+  is_virtual: true
+  package_type: marketplace_plugin
+  deployed_files:
+  - .agents/skills/context-map
+  - .agents/skills/refactor-plan
+  - .agents/skills/what-context-needed
+  content_hash: sha256:6d5ed9518d725ff8ff634939759a4b1069b1b89ef9a885bfedd6df569722d473
+- repo_url: github/awesome-copilot
+  host: github.com
+  resolved_commit: 53cf519185057f72780a1a5f6c8a26cc70cbb0be
+  virtual_path: plugins/doublecheck
+  is_virtual: true
+  package_type: marketplace_plugin
+  deployed_files:
+  - .agents/skills/doublecheck
+  content_hash: sha256:52b00e9d311e02bc4b74bf87dfcdb521d278e83bd8e5b63800e300bdf1af2cec
+- repo_url: github/awesome-copilot
+  host: github.com
+  resolved_commit: 53cf519185057f72780a1a5f6c8a26cc70cbb0be
+  virtual_path: plugins/software-engineering-team
+  is_virtual: true
+  package_type: marketplace_plugin
+  content_hash: sha256:c4023fff92e5ec5b6a18a9075d6e79459ebc1965678549ffd167248dece9fa65
+- repo_url: johnpapa/ai-ready
+  host: github.com
+  resolved_commit: b993d6512c918d8a21a61b7931726f5980c3c920
+  resolved_ref: b993d6512c918d8a21a61b7931726f5980c3c920
+  virtual_path: .github/plugin
+  is_virtual: true
+  package_type: marketplace_plugin
+  content_hash: sha256:5bce1874732b7b76c1becb877e57cb60e05458e1e193879ea51065aa2638f517

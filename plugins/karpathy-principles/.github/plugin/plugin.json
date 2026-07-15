@@ -1,0 +1,29 @@
+{
+  "name": "karpathy-principles",
+  "version": "0.1.0",
+  "description": "Karpathy-inspired coding discipline for AI agents. Provides the four core behavioral guidelines (Think Before Coding, Simplicity First, Surgical Changes, Goal-Driven Execution) as a reusable skill plus canonical AGENTS.md / Copilot instruction templates. Reduces over-engineering and improves output quality across Grok, GitHub Copilot, Claude, Cursor, and other agents.",
+  "author": {
+    "name": "Jacob Spoelstra"
+  },
+  "repository": "https://github.com/jacobspoelstra/devpack",
+  "license": "MIT",
+  "keywords": [
+    "karpathy",
+    "guidelines",
+    "discipline",
+    "simplicity",
+    "surgical",
+    "agents.md",
+    "copilot-instructions",
+    "coding-standards",
+    "ai-agents",
+    "productivity"
+  ],
+  "skills": [
+    "./skills/karpathy-principles"
+  ],
+  "templates": [
+    "./templates/AGENTS.md",
+    "./templates/copilot-instructions.md"
+  ]
+}

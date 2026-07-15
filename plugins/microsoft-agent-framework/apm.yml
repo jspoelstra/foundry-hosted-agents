@@ -1,0 +1,23 @@
+name: microsoft-agent-framework
+version: 0.1.0
+description: Microsoft Agent Framework (MAF) SDK skill for building persistent Azure AI agents in Python. Includes patterns for AzureAIAgentsProvider, hosted tools, MCP integration, threads, streaming, and structured outputs. Curated from https://github.com/microsoft/skills.
+author: Jacob Spoelstra (curated from Microsoft)
+license: MIT
+repository: https://github.com/jacobspoelstra/devpack
+type: skill
+
+keywords:
+  - microsoft
+  - agent-framework
+  - microsoft-agent-framework
+  - azure-ai
+  - foundry
+  - persistent-agents
+  - hosted-tools
+
+dependencies:
+  apm: []
+  mcp: []
+
+includes: auto
+scripts: {}

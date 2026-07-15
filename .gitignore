@@ -1,0 +1,47 @@
+# APM dependencies (from devpack bootstrap - do not commit)
+apm_modules/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Environment / secrets (sample uses .env for PROJECT_ENDPOINT + MODEL_DEPLOYMENT_NAME)
+.env
+.env.*
+
+# Local azd/Foundry and agent runtime state
+.azure/
+.foundry/
+.agents/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Editor swap / temp (keep .vscode/ tracked - it contains launch.json and tasks.json for F5 debugging the agent)
+*~
+*.swp

@@ -1,0 +1,23 @@
+{
+  "name": "azure-cosmos",
+  "version": "0.1.0",
+  "description": "Production-grade Azure Cosmos DB NoSQL skill for Python. Focuses on FastAPI service layers, dual authentication (DefaultAzureCredential + emulator), smart partitioning, parameterized queries, TDD, and graceful degradation patterns. Curated from https://github.com/microsoft/skills (azure-sdk-python).",
+  "author": {
+    "name": "Jacob Spoelstra (curated from Microsoft)"
+  },
+  "repository": "https://github.com/jacobspoelstra/devpack",
+  "license": "MIT",
+  "keywords": [
+    "azure",
+    "cosmos",
+    "cosmos-db",
+    "nosql",
+    "fastapi",
+    "database",
+    "partitioning",
+    "tdd"
+  ],
+  "skills": [
+    "./skills/azure-cosmos-db-py"
+  ]
+}

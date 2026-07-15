@@ -1,0 +1,20 @@
+name: azure-infrastructure-architecture
+version: 0.1.0
+description: Curated Azure infrastructure and architecture skills — Bicep, Container Apps, AKS, Well-Architected Framework, and landing zone patterns.
+author: Jacob Spoelstra (curated from Microsoft)
+license: MIT
+repository: https://github.com/jacobspoelstra/devpack
+type: skill
+
+keywords:
+  - azure
+  - bicep
+  - architecture
+  - infrastructure
+
+dependencies:
+  apm: []
+  mcp: []
+
+includes: auto
+scripts: {}

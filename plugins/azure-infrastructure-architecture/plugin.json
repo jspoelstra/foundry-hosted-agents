@@ -1,0 +1,25 @@
+{
+  "name": "azure-infrastructure-architecture",
+  "version": "0.1.0",
+  "description": "High-value Microsoft Azure infrastructure, Bicep, containers, and architecture skills. Includes cloud-solution-architect, azure-prepare (Bicep + Container Apps), and azure-kubernetes guidance. Curated from https://github.com/microsoft/skills",
+  "author": {
+    "name": "Jacob Spoelstra (curated from Microsoft)"
+  },
+  "repository": "https://github.com/jacobspoelstra/devpack",
+  "license": "MIT",
+  "keywords": [
+    "azure",
+    "bicep",
+    "infrastructure",
+    "architecture",
+    "containers",
+    "aks",
+    "well-architected",
+    "landing-zone"
+  ],
+  "skills": [
+    "./skills/cloud-solution-architect",
+    "./skills/azure-prepare",
+    "./skills/azure-kubernetes"
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "name": "anthropic-react-frontend",
+  "version": "0.1.0",
+  "description": "High-quality Anthropic Claude skills for distinctive, production-grade React and frontend development. Avoids generic AI aesthetics with bold design direction, refined typography, motion, and intentional UI choices. Includes frontend-design and web-artifacts-builder.",
+  "author": {
+    "name": "Jacob Spoelstra (curated from Anthropics)"
+  },
+  "repository": "https://github.com/jacobspoelstra/devpack",
+  "license": "MIT",
+  "keywords": [
+    "anthropic",
+    "claude",
+    "react",
+    "frontend",
+    "design",
+    "ui",
+    "tailwind",
+    "web-artifacts"
+  ],
+  "skills": [
+    "./skills/frontend-design",
+    "./skills/web-artifacts-builder"
+  ]
+}

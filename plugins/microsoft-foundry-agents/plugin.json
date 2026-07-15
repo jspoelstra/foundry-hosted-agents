@@ -1,0 +1,27 @@
+{
+  "name": "microsoft-foundry-agents",
+  "version": "0.1.0",
+  "description": "Microsoft AI Foundry (Azure AI Foundry) agent skills. Includes the official microsoft-foundry router and curated high-value skills for hosted agents, observability/evaluation, and model deployment. Curated from https://github.com/microsoft/skills",
+  "author": {
+    "name": "Jacob Spoelstra (curated from Microsoft)"
+  },
+  "repository": "https://github.com/jacobspoelstra/devpack",
+  "license": "MIT",
+  "keywords": [
+    "microsoft",
+    "foundry",
+    "azure-ai-foundry",
+    "agents",
+    "hosted-agents",
+    "evaluation",
+    "observability",
+    "model-deployment",
+    "fine-tuning"
+  ],
+  "skills": [
+    "./skills/microsoft-foundry",
+    "./skills/foundry-hosted-agents",
+    "./skills/foundry-observability",
+    "./skills/foundry-models"
+  ]
+}

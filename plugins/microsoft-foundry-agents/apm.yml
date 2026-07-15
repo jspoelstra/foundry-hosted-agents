@@ -1,0 +1,21 @@
+name: microsoft-foundry-agents
+version: 0.1.0
+description: Microsoft AI Foundry agent skills - curated selection of official skills for building, deploying, evaluating, and managing agents on Azure AI Foundry.
+author: Jacob Spoelstra (curated from Microsoft)
+license: MIT
+repository: https://github.com/jacobspoelstra/devpack
+type: skill
+
+keywords:
+  - microsoft
+  - foundry
+  - azure-ai-foundry
+  - agents
+  - evaluation
+
+dependencies:
+  apm: []
+  mcp: []
+
+includes: auto
+scripts: {}

@@ -1,0 +1,19 @@
+name: foundry-hosted-agents
+version: 0.1.0
+description: Sample code-based hosted agent on Microsoft AI Foundry (hotel availability tool demo using Azure AI AgentServer + local Python tools). Bootstrapped from ~/git/devpack with the complete curated skill pack (per devpack/README.md bootstrap instructions using copied plugins/ + manifest).
+author: Jacob Spoelstra (bootstrapped from devpack)
+dependencies:
+  apm:
+  - ./plugins/karpathy-principles               # Local Karpathy guidelines (skill + AGENTS.md templates)
+  - ./plugins/microsoft-foundry-agents          # Microsoft AI Foundry agent skills (hosted agents, observability, models)
+  - ./plugins/anthropic-react-frontend          # Anthropic skills for high-quality React/frontend (frontend-design + web-artifacts-builder)
+  - ./plugins/azure-infrastructure-architecture # Azure Bicep, containers (AKS), and architecture (Well-Architected, patterns)
+  - ./plugins/microsoft-agent-framework         # Microsoft Agent Framework (MAF) Python SDK skill for persistent Foundry agents
+  - ./plugins/azure-cosmos                      # Azure Cosmos DB production patterns (FastAPI service layer, partitioning, TDD)
+  - johnpapa/ai-ready/.github/plugin#b993d6512c918d8a21a61b7931726f5980c3c920
+  - github/awesome-copilot/plugins/context-engineering
+  - github/awesome-copilot/plugins/doublecheck
+  - github/awesome-copilot/plugins/software-engineering-team
+  mcp: []
+includes: auto
+scripts: {}

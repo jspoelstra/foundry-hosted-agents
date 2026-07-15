@@ -1,0 +1,23 @@
+name: azure-cosmos
+version: 0.1.0
+description: Production-grade Azure Cosmos DB NoSQL patterns for Python/FastAPI. Includes dual-auth client setup, service layer architecture, partitioning strategies, TDD patterns, graceful degradation, and ready-to-use templates. Curated from https://github.com/microsoft/skills.
+author: Jacob Spoelstra (curated from Microsoft)
+license: MIT
+repository: https://github.com/jacobspoelstra/devpack
+type: skill
+
+keywords:
+  - azure
+  - cosmos
+  - cosmos-db
+  - nosql
+  - fastapi
+  - partitioning
+  - database
+
+dependencies:
+  apm: []
+  mcp: []
+
+includes: auto
+scripts: {}
