@@ -1,7 +1,8 @@
 import os
 from random import randint
+from pathlib import Path
 
-from agent_framework import Agent, tool
+from agent_framework import Agent, SkillsProvider, tool
 from agent_framework.foundry import FoundryChatClient
 from agent_framework_foundry_hosting import ResponsesHostServer
 from azure.identity import DefaultAzureCredential
@@ -23,7 +24,6 @@ SEATTLE_NEIGHBORHOOD_TIPS = {
     "fremont": "Quirky neighborhood with breweries and easy access to the canal trail.",
 }
 
-
 def _read_required_env() -> tuple[str, str]:
     project_endpoint = os.getenv("FOUNDRY_PROJECT_ENDPOINT") or os.getenv(
         "PROJECT_ENDPOINT"
@@ -43,6 +43,17 @@ def _read_required_env() -> tuple[str, str]:
             "(preferred) or MODEL_DEPLOYMENT_NAME."
         )
     return project_endpoint, model_name
+
+
+def _create_skills_provider() -> SkillsProvider:
+    skills_root = Path(
+        os.getenv("SEATTLE_SKILLS_ROOT", str(Path(__file__).parent / "skills"))
+    )
+    return SkillsProvider.from_paths(
+        skill_paths=skills_root,
+        disable_load_skill_approval=True,
+        disable_read_skill_resource_approval=True,
+    )
 
 
 @tool(approval_mode="never_require")
@@ -73,6 +84,7 @@ def get_neighborhood_tip(
 
 def main() -> None:
     project_endpoint, model_name = _read_required_env()
+    skills_provider = _create_skills_provider()
 
     client = FoundryChatClient(
         project_endpoint=project_endpoint,
@@ -88,6 +100,7 @@ def main() -> None:
             "get_neighborhood_tip for neighborhood guidance."
         ),
         tools=[get_seattle_weather, get_neighborhood_tip],
+        context_providers=[skills_provider],
         default_options={"store": False},
     )
 
