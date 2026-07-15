@@ -5,9 +5,11 @@ This repository is updated to the current hosted-agent pattern for Microsoft Fou
 - **Agent Framework + Foundry hosting packages**
 - **Responses protocol (`/responses`)**
 - **`azd` deployment flow with `azure.yaml`**
-- **Two local skills/tools** in `main.py`:
+- **Three local skills/tools** in `main.py`:
   - `get_seattle_weather`
   - `get_neighborhood_tip`
+  - `get_local_activities`
+- A file-based **agent skill** in `skills/seattle-activities.md` that is injected into agent instructions at startup.
 
 ## What changed vs older samples
 
@@ -75,6 +77,7 @@ Set:
 
 - `FOUNDRY_PROJECT_ENDPOINT`
 - `AZURE_AI_MODEL_DEPLOYMENT_NAME`
+- Optional: `SEATTLE_ACTIVITY_SKILL_PATH` (defaults to `skills/seattle-activities.md`)
 
 ## Run locally
 
@@ -88,6 +91,13 @@ In another terminal:
 ```bash
 curl -sS -H "Content-Type: application/json" -X POST http://localhost:8088/responses \
   -d '{"input":"What is the weather in Capitol Hill and give me one neighborhood tip?","stream":false}'
+```
+
+Try the skill-focused prompt:
+
+```bash
+curl -sS -H "Content-Type: application/json" -X POST http://localhost:8088/responses \
+  -d '{"input":"Give me Seattle activities for Capitol Hill this evening.","stream":false}'
 ```
 
 ## Deploy to Foundry with azd

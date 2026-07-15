@@ -1,5 +1,6 @@
 import os
 from random import randint
+from pathlib import Path
 
 from agent_framework import Agent, tool
 from agent_framework.foundry import FoundryChatClient
@@ -23,6 +24,24 @@ SEATTLE_NEIGHBORHOOD_TIPS = {
     "fremont": "Quirky neighborhood with breweries and easy access to the canal trail.",
 }
 
+SEATTLE_ACTIVITIES = {
+    "downtown": [
+        "Pike Place Market food walk",
+        "Seattle Art Museum",
+        "Waterfront ferris wheel at sunset",
+    ],
+    "capitol hill": [
+        "Volunteer Park Conservatory",
+        "Indie coffee crawl on Pike/Pine",
+        "Live music at neighborhood venues",
+    ],
+    "fremont": [
+        "Fremont Sunday Market",
+        "Canal trail bike ride",
+        "Brewery tasting flight",
+    ],
+}
+
 
 def _read_required_env() -> tuple[str, str]:
     project_endpoint = os.getenv("FOUNDRY_PROJECT_ENDPOINT") or os.getenv(
@@ -43,6 +62,19 @@ def _read_required_env() -> tuple[str, str]:
             "(preferred) or MODEL_DEPLOYMENT_NAME."
         )
     return project_endpoint, model_name
+
+
+def _load_skill_instructions() -> str:
+    default_skill_path = Path("skills/seattle-activities.md")
+    configured_path = Path(
+        os.getenv("SEATTLE_ACTIVITY_SKILL_PATH", str(default_skill_path))
+    )
+    if not configured_path.exists():
+        return (
+            "Skill unavailable: seattle-activities. "
+            "Still provide helpful Seattle travel suggestions."
+        )
+    return configured_path.read_text(encoding="utf-8").strip()
 
 
 @tool(approval_mode="never_require")
@@ -71,8 +103,34 @@ def get_neighborhood_tip(
     )
 
 
+@tool(approval_mode="never_require")
+def get_local_activities(
+    neighborhood: Annotated[
+        str, Field(description="Seattle neighborhood name, such as Capitol Hill.")
+    ],
+    interest: Annotated[
+        str, Field(description="Interest such as food, outdoors, museums, or nightlife.")
+    ] = "general",
+) -> str:
+    """Get local Seattle activity ideas for a neighborhood and interest."""
+    key = neighborhood.strip().lower()
+    ideas = SEATTLE_ACTIVITIES.get(
+        key,
+        [
+            "Coffee shop and bookstore pairing",
+            "Neighborhood park walk",
+            "Local food hall visit",
+        ],
+    )
+    return (
+        f"{neighborhood} activity ideas ({interest}): "
+        + "; ".join(f"- {item}" for item in ideas)
+    )
+
+
 def main() -> None:
     project_endpoint, model_name = _read_required_env()
+    skill_instructions = _load_skill_instructions()
 
     client = FoundryChatClient(
         project_endpoint=project_endpoint,
@@ -85,9 +143,12 @@ def main() -> None:
         instructions=(
             "You are a concise Seattle trip assistant. "
             "Use get_seattle_weather for weather questions and "
-            "get_neighborhood_tip for neighborhood guidance."
+            "get_neighborhood_tip for neighborhood guidance. "
+            "Use get_local_activities for activity planning.\n\n"
+            "Skill: seattle-activities\n"
+            f"{skill_instructions}"
         ),
-        tools=[get_seattle_weather, get_neighborhood_tip],
+        tools=[get_seattle_weather, get_neighborhood_tip, get_local_activities],
         default_options={"store": False},
     )
 
