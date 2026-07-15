@@ -78,6 +78,8 @@ export DEBUG_AUTH=true
 python main.py
 ```
 
+Note: if you see a one-off timeout to `169.254.169.254` during startup, that is telemetry resource detection and not an agent crash. The sample now suppresses this by default for local runs.
+
 ## Setup virtual environment
 
 ```bash
