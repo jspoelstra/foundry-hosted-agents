@@ -1,6 +1,16 @@
 import os
+import json
+import base64
 from random import randint
 from pathlib import Path
+
+# Avoid noisy local startup spans from Azure VM metadata probing.
+if (
+    not os.getenv("IDENTITY_ENDPOINT")
+    and not os.getenv("MSI_ENDPOINT")
+    and "OTEL_EXPERIMENTAL_RESOURCE_DETECTORS" not in os.environ
+):
+    os.environ["OTEL_EXPERIMENTAL_RESOURCE_DETECTORS"] = "azure_app_service"
 
 from agent_framework import Agent, SkillsProvider, tool
 from agent_framework.foundry import FoundryChatClient
@@ -61,12 +71,54 @@ def _create_skills_provider() -> SkillsProvider:
     )
 
 
-def _create_credential() -> ChainedTokenCredential:
-    # Prefer azd/az identity in local dev, then managed identity in hosted runtime.
+def _is_hosted_runtime() -> bool:
+    return bool(
+        os.getenv("IDENTITY_ENDPOINT")
+        or os.getenv("MSI_ENDPOINT")
+        or os.getenv("WEBSITE_SITE_NAME")
+    )
+
+
+def _decode_jwt_claims(token: str) -> dict[str, str]:
+    payload = token.split(".")[1]
+    payload += "=" * (-len(payload) % 4)
+    claims = json.loads(base64.urlsafe_b64decode(payload.encode()).decode())
+    return {
+        "oid": str(claims.get("oid")),
+        "tid": str(claims.get("tid")),
+        "name": str(claims.get("name")),
+    }
+
+
+def _create_credential() -> object:
+    tenant_id = os.getenv("AZURE_TENANT_ID")
+
+    if _is_hosted_runtime():
+        return ManagedIdentityCredential()
+
+    azd_credential = AzureDeveloperCliCredential(tenant_id=tenant_id)
+    allow_az_cli_fallback = (
+        os.getenv("ALLOW_AZ_CLI_FALLBACK", "false").strip().lower() == "true"
+    )
+    if not allow_az_cli_fallback:
+        return azd_credential
+
     return ChainedTokenCredential(
-        AzureDeveloperCliCredential(),
-        AzureCliCredential(),
-        ManagedIdentityCredential(),
+        azd_credential,
+        AzureCliCredential(tenant_id=tenant_id),
+    )
+
+
+def _log_auth_identity(credential: object) -> None:
+    if os.getenv("DEBUG_AUTH", "false").strip().lower() != "true":
+        return
+    token = credential.get_token("https://management.azure.com/.default")
+    claims = _decode_jwt_claims(token.token)
+    print(
+        "Auth identity:",
+        f"oid={claims['oid']}",
+        f"tid={claims['tid']}",
+        f"name={claims['name']}",
     )
 
 
@@ -100,6 +152,7 @@ def main() -> None:
     project_endpoint, model_name = _read_required_env()
     skills_provider = _create_skills_provider()
     credential = _create_credential()
+    _log_auth_identity(credential)
 
     client = FoundryChatClient(
         project_endpoint=project_endpoint,
