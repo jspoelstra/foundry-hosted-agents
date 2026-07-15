@@ -5,7 +5,12 @@ from pathlib import Path
 from agent_framework import Agent, SkillsProvider, tool
 from agent_framework.foundry import FoundryChatClient
 from agent_framework_foundry_hosting import ResponsesHostServer
-from azure.identity import DefaultAzureCredential
+from azure.identity import (
+    AzureCliCredential,
+    AzureDeveloperCliCredential,
+    ChainedTokenCredential,
+    ManagedIdentityCredential,
+)
 from dotenv import load_dotenv
 from pydantic import Field
 from typing_extensions import Annotated
@@ -56,6 +61,15 @@ def _create_skills_provider() -> SkillsProvider:
     )
 
 
+def _create_credential() -> ChainedTokenCredential:
+    # Prefer azd/az identity in local dev, then managed identity in hosted runtime.
+    return ChainedTokenCredential(
+        AzureDeveloperCliCredential(),
+        AzureCliCredential(),
+        ManagedIdentityCredential(),
+    )
+
+
 @tool(approval_mode="never_require")
 def get_seattle_weather(
     neighborhood: Annotated[
@@ -85,11 +99,12 @@ def get_neighborhood_tip(
 def main() -> None:
     project_endpoint, model_name = _read_required_env()
     skills_provider = _create_skills_provider()
+    credential = _create_credential()
 
     client = FoundryChatClient(
         project_endpoint=project_endpoint,
         model=model_name,
-        credential=DefaultAzureCredential(),
+        credential=credential,
     )
 
     agent = Agent(
