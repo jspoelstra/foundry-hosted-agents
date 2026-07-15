@@ -43,10 +43,16 @@ This repository is updated to the current hosted-agent pattern for Microsoft Fou
 You need Azure auth in two places:
 
 1. **Before local Python run (`python main.py`)**  
-   This sample prefers `azd` identity first, then `az`, then managed identity:
+   This sample uses `azd` identity for local runs by default (no silent fallback):
 
    ```bash
    azd auth login
+   ```
+
+   Optional fallback to Azure CLI credentials:
+
+   ```bash
+   export ALLOW_AZ_CLI_FALLBACK=true
    az login
    ```
 
@@ -58,6 +64,19 @@ You need Azure auth in two places:
    ```
 
 If you see 403 errors with `AIServices/agents/write`, your local credential likely resolved to the wrong tenant/account. Re-run `azd auth login` in the correct tenant and retry.
+
+For explicit local tenant pinning:
+
+```bash
+export AZURE_TENANT_ID=16b3c013-d300-468d-ac64-7eda0820b6d3
+```
+
+To print the local credential identity (`oid`, `tid`) at startup:
+
+```bash
+export DEBUG_AUTH=true
+python main.py
+```
 
 ## Setup virtual environment
 
