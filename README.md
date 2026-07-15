@@ -5,11 +5,10 @@ This repository is updated to the current hosted-agent pattern for Microsoft Fou
 - **Agent Framework + Foundry hosting packages**
 - **Responses protocol (`/responses`)**
 - **`azd` deployment flow with `azure.yaml`**
-- **Three local skills/tools** in `main.py`:
+- **Two local tools** in `main.py`:
   - `get_seattle_weather`
   - `get_neighborhood_tip`
-  - `get_local_activities`
-- A file-based **agent skill** in `skills/seattle-activities.md` that is injected into agent instructions at startup.
+- A file-based **Agent Skill** in `skills/seattle-activities/SKILL.md` loaded dynamically via `SkillsProvider`.
 
 ## What changed vs older samples
 
@@ -19,6 +18,7 @@ This repository is updated to the current hosted-agent pattern for Microsoft Fou
 2. Agent setup now uses:
    - `FoundryChatClient`
    - `ResponsesHostServer`
+   - `SkillsProvider.from_paths(...)` for dynamic skill loading
 3. Env vars now follow current Foundry naming:
    - `FOUNDRY_PROJECT_ENDPOINT`
    - `AZURE_AI_MODEL_DEPLOYMENT_NAME`
@@ -77,7 +77,24 @@ Set:
 
 - `FOUNDRY_PROJECT_ENDPOINT`
 - `AZURE_AI_MODEL_DEPLOYMENT_NAME`
-- Optional: `SEATTLE_ACTIVITY_SKILL_PATH` (defaults to `skills/seattle-activities.md`)
+- Optional: `SEATTLE_SKILLS_ROOT` (defaults to `./skills`)
+
+## Dynamic skill loading (Agent Framework built-in)
+
+This sample uses Agent Framework's built-in **progressive disclosure** skill flow:
+
+1. The skill is advertised by name/description.
+2. The agent loads full skill instructions on demand (`load_skill`).
+3. The agent reads skill resources only as needed (`read_skill_resource`).
+
+Implementation is in `main.py`:
+
+```python
+skills_provider = SkillsProvider.from_paths(skill_paths=Path(__file__).parent / "skills")
+agent = Agent(..., context_providers=[skills_provider])
+```
+
+This keeps base prompt context small and lets the harness load skill detail only for relevant tasks.
 
 ## Run locally
 

@@ -2,7 +2,7 @@ import os
 from random import randint
 from pathlib import Path
 
-from agent_framework import Agent, tool
+from agent_framework import Agent, SkillsProvider, tool
 from agent_framework.foundry import FoundryChatClient
 from agent_framework_foundry_hosting import ResponsesHostServer
 from azure.identity import DefaultAzureCredential
@@ -23,25 +23,6 @@ SEATTLE_NEIGHBORHOOD_TIPS = {
     "capitol hill": "Best nightlife and coffee density. Great if you want to explore on foot.",
     "fremont": "Quirky neighborhood with breweries and easy access to the canal trail.",
 }
-
-SEATTLE_ACTIVITIES = {
-    "downtown": [
-        "Pike Place Market food walk",
-        "Seattle Art Museum",
-        "Waterfront ferris wheel at sunset",
-    ],
-    "capitol hill": [
-        "Volunteer Park Conservatory",
-        "Indie coffee crawl on Pike/Pine",
-        "Live music at neighborhood venues",
-    ],
-    "fremont": [
-        "Fremont Sunday Market",
-        "Canal trail bike ride",
-        "Brewery tasting flight",
-    ],
-}
-
 
 def _read_required_env() -> tuple[str, str]:
     project_endpoint = os.getenv("FOUNDRY_PROJECT_ENDPOINT") or os.getenv(
@@ -64,17 +45,15 @@ def _read_required_env() -> tuple[str, str]:
     return project_endpoint, model_name
 
 
-def _load_skill_instructions() -> str:
-    default_skill_path = Path("skills/seattle-activities.md")
-    configured_path = Path(
-        os.getenv("SEATTLE_ACTIVITY_SKILL_PATH", str(default_skill_path))
+def _create_skills_provider() -> SkillsProvider:
+    skills_root = Path(
+        os.getenv("SEATTLE_SKILLS_ROOT", str(Path(__file__).parent / "skills"))
     )
-    if not configured_path.exists():
-        return (
-            "Skill unavailable: seattle-activities. "
-            "Still provide helpful Seattle travel suggestions."
-        )
-    return configured_path.read_text(encoding="utf-8").strip()
+    return SkillsProvider.from_paths(
+        skill_paths=skills_root,
+        disable_load_skill_approval=True,
+        disable_read_skill_resource_approval=True,
+    )
 
 
 @tool(approval_mode="never_require")
@@ -103,34 +82,9 @@ def get_neighborhood_tip(
     )
 
 
-@tool(approval_mode="never_require")
-def get_local_activities(
-    neighborhood: Annotated[
-        str, Field(description="Seattle neighborhood name, such as Capitol Hill.")
-    ],
-    interest: Annotated[
-        str, Field(description="Interest such as food, outdoors, museums, or nightlife.")
-    ] = "general",
-) -> str:
-    """Get local Seattle activity ideas for a neighborhood and interest."""
-    key = neighborhood.strip().lower()
-    ideas = SEATTLE_ACTIVITIES.get(
-        key,
-        [
-            "Coffee shop and bookstore pairing",
-            "Neighborhood park walk",
-            "Local food hall visit",
-        ],
-    )
-    return (
-        f"{neighborhood} activity ideas ({interest}): "
-        + "; ".join(f"- {item}" for item in ideas)
-    )
-
-
 def main() -> None:
     project_endpoint, model_name = _read_required_env()
-    skill_instructions = _load_skill_instructions()
+    skills_provider = _create_skills_provider()
 
     client = FoundryChatClient(
         project_endpoint=project_endpoint,
@@ -143,12 +97,10 @@ def main() -> None:
         instructions=(
             "You are a concise Seattle trip assistant. "
             "Use get_seattle_weather for weather questions and "
-            "get_neighborhood_tip for neighborhood guidance. "
-            "Use get_local_activities for activity planning.\n\n"
-            "Skill: seattle-activities\n"
-            f"{skill_instructions}"
+            "get_neighborhood_tip for neighborhood guidance."
         ),
-        tools=[get_seattle_weather, get_neighborhood_tip, get_local_activities],
+        tools=[get_seattle_weather, get_neighborhood_tip],
+        context_providers=[skills_provider],
         default_options={"store": False},
     )
 
