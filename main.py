@@ -4,6 +4,14 @@ import base64
 from random import randint
 from pathlib import Path
 
+# Avoid noisy local startup spans from Azure VM metadata probing.
+if (
+    not os.getenv("IDENTITY_ENDPOINT")
+    and not os.getenv("MSI_ENDPOINT")
+    and "OTEL_EXPERIMENTAL_RESOURCE_DETECTORS" not in os.environ
+):
+    os.environ["OTEL_EXPERIMENTAL_RESOURCE_DETECTORS"] = "azure_app_service"
+
 from agent_framework import Agent, SkillsProvider, tool
 from agent_framework.foundry import FoundryChatClient
 from agent_framework_foundry_hosting import ResponsesHostServer
