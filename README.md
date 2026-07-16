@@ -150,10 +150,22 @@ azd provision
 azd deploy
 ```
 
+Before invoking, verify these environment values point to the same Foundry project and a real deployment in that project:
+
+```bash
+azd env get-values | grep -E 'FOUNDRY_PROJECT_ENDPOINT|AZURE_AI_MODEL_DEPLOYMENT_NAME'
+```
+
 Invoke the deployed agent:
 
 ```bash
 azd ai agent invoke "What is the weather in Fremont and where should I stay nearby?"
+```
+
+If output is empty, dump raw events to see the exact server response:
+
+```bash
+azd ai agent invoke --output raw "What is the weather in Fremont and where should I stay nearby?"
 ```
 
 ## See traces and logs
@@ -166,6 +178,34 @@ azd ai agent invoke "What is the weather in Fremont and where should I stay near
    ```
 
 Foundry hosted agents inject telemetry configuration (Application Insights / OpenTelemetry) at runtime, so traces and logs are available after invocation.
+
+## Troubleshooting
+
+### Invoke returns no text
+
+Some `azd ai agent invoke` versions do not render all SSE failure events in formatted output. Use raw mode to inspect what the server returned:
+
+```bash
+azd ai agent invoke --output raw "What is the weather in Fremont?"
+```
+
+If you see `event: response.failed`, use the error payload from that event as the source of truth.
+
+### `DeploymentNotFound` in `response.failed`
+
+If raw output contains `DeploymentNotFound`, your configured model deployment name does not exist in the target Foundry project.
+
+1. Set the model deployment name to one that exists in your project.
+2. Confirm `FOUNDRY_PROJECT_ENDPOINT` points to that same project.
+3. Re-run provision/deploy:
+
+```bash
+azd env set AZURE_AI_MODEL_DEPLOYMENT_NAME gpt-5.4-mini
+azd provision
+azd deploy
+```
+
+Then invoke again.
 
 ## References
 
