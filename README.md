@@ -1,30 +1,38 @@
-# Foundry Hosted Agent Learning Sample (Current Stack)
+# Foundry Hosted Agent with Skills — Learning Sample
 
-This repository is updated to the current hosted-agent pattern for Microsoft Foundry:
+This repository is a minimal, working example showing how to build and deploy a **Foundry Hosted Agent** that uses **Agent Skills**. It is designed to be read and understood end-to-end in under an hour.
 
-- **Agent Framework + Foundry hosting packages**
-- **Responses protocol (`/responses`)**
-- **`azd` deployment flow with `azure.yaml`**
-- **Two local tools** in `main.py`:
-  - `get_seattle_weather`
-  - `get_neighborhood_tip`
-- A file-based **Agent Skill** in `skills/seattle-activities/SKILL.md` loaded dynamically via `SkillsProvider`.
+## What you'll learn
 
-## What changed vs older samples
+- How to write a hosted agent with **local Python tools** using Agent Framework.
+- How to add a file-based **Agent Skill** that the agent loads on demand via `SkillsProvider`.
+- How to run the agent locally and deploy it to Azure Foundry using `azd`.
+- How the **progressive-disclosure** skill flow works: the agent is only told a skill exists by name; it fetches full instructions and resources only when needed, keeping the base prompt small.
 
-1. Old `azure-ai-agentserver-agentframework` usage was replaced with:
-   - `agent-framework-foundry`
-   - `agent-framework-foundry-hosting`
-2. Agent setup now uses:
-   - `FoundryChatClient`
-   - `ResponsesHostServer`
-   - `SkillsProvider.from_paths(...)` for dynamic skill loading
-3. Env vars now follow current Foundry naming:
-   - `FOUNDRY_PROJECT_ENDPOINT`
-   - `AZURE_AI_MODEL_DEPLOYMENT_NAME`
-4. Added `azure.yaml` so you can run:
-   - local: `azd ai agent run`
-   - remote deploy: `azd provision` + `azd deploy`
+## Key concepts
+
+| Concept | Where to look |
+|---|---|
+| Agent entry point | `main.py` |
+| Local tools (`get_seattle_weather`, `get_neighborhood_tip`) | `main.py` |
+| Skill definition | `skills/seattle-activities/SKILL.md` |
+| Skill resources | `skills/seattle-activities/references/` |
+| Foundry deployment config | `azure.yaml` |
+| Agent metadata | `agent.yaml` |
+
+### What is a Foundry Hosted Agent?
+
+A **Foundry Hosted Agent** is a containerized Python process that exposes the [Responses protocol](https://learn.microsoft.com/en-us/azure/foundry/agents/) (`POST /responses`). Azure Foundry manages the container lifecycle, authentication, telemetry, and scaling. You write `main.py`, define tools and skills, and `azd deploy` does the rest.
+
+### What is an Agent Skill?
+
+A **Skill** is a Markdown file (`SKILL.md`) that packages a reusable task description, workflow steps, and optional reference files. Skills are discovered from a directory by `SkillsProvider`. At runtime:
+
+1. The agent is told a skill exists (name + description only).
+2. When the user's intent matches, the agent calls `load_skill` to fetch the full instructions.
+3. If the skill references data files, the agent calls `read_skill_resource` to read them on demand.
+
+This means you can add new skills just by dropping a folder into `skills/` — no code changes needed.
 
 ## Prerequisites
 
@@ -68,7 +76,7 @@ If you see 403 errors with `AIServices/agents/write`, your local credential like
 For explicit local tenant pinning:
 
 ```bash
-export AZURE_TENANT_ID=16b3c013-d300-468d-ac64-7eda0820b6d3
+export AZURE_TENANT_ID=<your-tenant-id>
 ```
 
 To print the local credential identity (`oid`, `tid`) at startup:
@@ -103,22 +111,18 @@ Set:
 - `AZURE_AI_MODEL_DEPLOYMENT_NAME`
 - Optional: `SEATTLE_SKILLS_ROOT` (defaults to `./skills`)
 
-## Dynamic skill loading (Agent Framework built-in)
+## How skill loading works in code
 
-This sample uses Agent Framework's built-in **progressive disclosure** skill flow:
-
-1. The skill is advertised by name/description.
-2. The agent loads full skill instructions on demand (`load_skill`).
-3. The agent reads skill resources only as needed (`read_skill_resource`).
-
-Implementation is in `main.py`:
+`SkillsProvider` is wired in as a `context_provider` on the agent:
 
 ```python
-skills_provider = SkillsProvider.from_paths(skill_paths=Path(__file__).parent / "skills")
+skills_provider = SkillsProvider.from_paths(skill_path=Path(__file__).parent / "skills")
 agent = Agent(..., context_providers=[skills_provider])
 ```
 
-This keeps base prompt context small and lets the harness load skill detail only for relevant tasks.
+Agent Framework automatically injects `load_skill` and `read_skill_resource` tools into the agent. The agent only fetches a skill's full markdown when it decides the skill is relevant to the current request. This keeps the system prompt small and lets you scale to many skills without bloating every conversation.
+
+To add your own skill, create a new subdirectory under `skills/` with a `SKILL.md` that follows the same front-matter format as `skills/seattle-activities/SKILL.md`.
 
 ## Run locally
 
